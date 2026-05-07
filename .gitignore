@@ -1,7 +1,6 @@
-venv/
-__pycache__/
-*.pyc
-history.db
-.env
-report.pdf
-chart.png
+streamlit
+pandas
+matplotlib
+reportlab
+streamlit-authenticator==0.2.2
+PyYAML
