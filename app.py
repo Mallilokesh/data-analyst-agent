@@ -197,11 +197,13 @@ if authentication_status:
 
                 if chart_type == "Bar":
                     if x_col == y_col:
-                        st.warning("Please select different columns for X and Y axis.")
+                       st.warning("Please select different columns for X and Y axis.")
                     else:
-    
-                       st.bar_chart(chart_data.set_index(x_col))
-                    st.bar_chart(chart_data.set_index(x_col))
+                        try:
+                            chart_data = df.groupby(x_col)[y_col].sum()
+                            st.bar_chart(chart_data)
+                        except Exception as e:
+                            st.error(f"Could not create chart: {e}")
                 elif chart_type == "Line":
                     st.line_chart(df.set_index(x_col)[y_col] if x_col != y_col else df[num_cols])
                 elif chart_type == "Area":
