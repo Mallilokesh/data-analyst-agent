@@ -157,11 +157,11 @@ if authentication_status:
         with tab4:
             st.subheader("Your Query History")
             rows = cursor.execute(
-                "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 20",
+                "SELECT filename, query, FROM history WHERE username=?LIMIT 20",
                 (username,)
             ).fetchall()
             if rows:
-                hist_df = pd.DataFrame(rows, columns=["File", "Query", "Time"])
+                hist_df = pd.DataFrame(rows, columns=["File", "Query"])
                 st.dataframe(hist_df, use_container_width=True)
             else:
                 st.info("No queries yet. Ask your first question above!")
