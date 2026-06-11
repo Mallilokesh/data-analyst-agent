@@ -330,7 +330,7 @@ with tab3:
                 (username,)
             ).fetchall()
 
-        if rows:
+            if rows:
                 hist_df = pd.DataFrame(
                     rows,
                     columns=["File", "Query", "Time"]
