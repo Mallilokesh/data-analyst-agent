@@ -321,18 +321,19 @@ with tab3:
                             )
 
         # ── TAB 5: History ────────────────────────────────────────────────────
-    with tab5:
-        st.subheader("Your query history")
+   with tab5:
+    st.subheader("Your query history")
 
-        try:
-            rows = cursor.execute(
-                "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 30",
-                (username,)
-            ).fetchall()
-            if rows:
+    try:
+        rows = cursor.execute(
+            "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 30",
+            (username,)
+        ).fetchall()
+
+        if rows:
             hist_df = pd.DataFrame(
                 rows,
-                columns=["File", "Query"]
+                columns=["File", "Query", "Time"]
             )
 
             st.dataframe(
@@ -340,34 +341,37 @@ with tab3:
                 use_container_width=True,
                 hide_index=True
             )
+
         else:
             st.info(
                 "No queries yet. Ask your first question in the Ask AI tab!"
             )
 
-            
+    except Exception as e:
+        st.error(f"Could not load history: {e}")
 
-        except Exception as e:
-            st.error(f"Could not load history: {e}")
+else:
+    # Landing state
+    st.markdown("---")
+    col1, col2, col3 = st.columns(3)
 
-    else:
-        # Landing state
-        st.markdown("---")
-        col1, col2, col3 = st.columns(3)
-        col1.info("**Step 1**\n\n📁 Upload a CSV or Excel file above")
-        col2.info("**Step 2**\n\n💬 Ask any question about your data in plain English")
-        col3.info("**Step 3**\n\n📄 Download the AI-generated PDF report")
+    col1.info("**Step 1**\n\n📁 Upload a CSV or Excel file above")
+    col2.info("**Step 2**\n\n💬 Ask any question about your data in plain English")
+    col3.info("**Step 3**\n\n📄 Download the AI-generated PDF report")
 
-        st.markdown("---")
-        st.markdown("**💡 Example questions you can ask:**")
-        examples = [
-            "What is the average sales by region?",
-            "Show me the top 10 customers by revenue",
-            "Are there any missing values in this dataset?",
-            "Plot a bar chart of monthly revenue",
-            "What are the key insights from this data?",
-            "Which product has the highest profit margin?"
-        ]
-        cols = st.columns(3)
-        for i, ex in enumerate(examples):
-            cols[i % 3].markdown(f"• *{ex}*")
+    st.markdown("---")
+    st.markdown("**💡 Example questions you can ask:**")
+
+    examples = [
+        "What is the average sales by region?",
+        "Show me the top 10 customers by revenue",
+        "Are there any missing values in this dataset?",
+        "Plot a bar chart of monthly revenue",
+        "What are the key insights from this data?",
+        "Which product has the highest profit margin?"
+    ]
+
+    cols = st.columns(3)
+
+    for i, ex in enumerate(examples):
+        cols[i % 3].markdown(f"• *{ex}*")
