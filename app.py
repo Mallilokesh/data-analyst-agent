@@ -322,19 +322,31 @@ with tab3:
 
         # ── TAB 5: History ────────────────────────────────────────────────────
         with tab5:
-    st.subheader("Your query history")
-    try:
-        rows = cursor.execute(
-            "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 30",
-            (username,)
-        ).fetchall()
-        if rows:
-            hist_df = pd.DataFrame(rows, columns=["File","Query","Time"])
-            st.dataframe(hist_df, use_container_width=True, hide_index=True)
-        else:
-            st.info("No queries yet. Ask your first question in the Ask AI tab!")
-    except Exception as e:
-        st.error(f"Could not load history: {e}")
+            st.subheader("Your query history")
+
+            try:
+               rows = cursor.execute(
+                   "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 30",
+                  (username,)
+                ).fetchall()
+
+                  if rows:
+                     hist_df = pd.DataFrame(
+                        rows,
+                        columns=["File", "Query", "Time"]
+                       )
+                    st.dataframe(
+                        hist_df,
+                        use_container_width=True,
+                        hide_index=True
+                     )
+                 else:
+                     st.info(
+                         "No queries yet. Ask your first question in the Ask AI tab!"
+                     )
+
+            except Exception as e:
+                st.error(f"Could not load history: {e}")
 
     else:
         # Landing state
