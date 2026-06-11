@@ -204,22 +204,43 @@ if authentication_status:
                             st.bar_chart(chart_data)
                         except Exception as e:
                             st.error(f"Could not create chart: {e}")
-                elif chart_type == "Line":
-                    st.line_chart(df.set_index(x_col)[y_col] if x_col != y_col else df[num_cols])
-                elif chart_type == "Area":
-                    st.area_chart(df.set_index(x_col)[y_col] if x_col != y_col else df[num_cols])
-                elif chart_type == "Scatter":
-                    y2 = st.selectbox("Second Y axis (scatter)", [c for c in num_cols if c != y_col])
-                    st.scatter_chart(df[[y_col, y2]])
-                elif chart_type == "Histogram":
-                    import plotly.express as px
-                    fig = px.histogram(df, x=y_col, nbins=30, color_discrete_sequence=["#185FA5"])
-                    st.plotly_chart(fig, use_container_width=True)
-                elif chart_type == "Pie":
+with tab3:
+    st.subheader("Interactive chart builder")
+    if not num_cols:
+        st.info("No numeric columns found for charting.")
+    else:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            chart_type = st.selectbox("Chart type", ["Bar","Line","Area","Histogram","Pie"])
+        with col2:
+            x_col = st.selectbox("X axis / Group by", df.columns.tolist())
+        with col3:
+            y_col = st.selectbox("Y axis (numeric)", num_cols)
+
+        try:
+            if chart_type == "Bar":
+                if x_col != y_col:
+                    st.bar_chart(df.groupby(x_col)[y_col].sum())
+                else:
+                    st.bar_chart(df[y_col])
+            elif chart_type == "Line":
+                st.line_chart(df[y_col])
+            elif chart_type == "Area":
+                st.area_chart(df[y_col])
+            elif chart_type == "Histogram":
+                import plotly.express as px
+                fig = px.histogram(df, x=y_col, nbins=30, color_discrete_sequence=["#185FA5"])
+                st.plotly_chart(fig, use_container_width=True)
+            elif chart_type == "Pie":
+                if x_col != y_col:
                     pie_data = df.groupby(x_col)[y_col].sum().reset_index().head(10)
                     import plotly.express as px
-                    fig = px.pie(pie_data, names=x_col, values=y_col, color_discrete_sequence=px.colors.sequential.Blues_r)
+                    fig = px.pie(pie_data, names=x_col, values=y_col)
                     st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.warning("Select different X and Y columns for Pie chart.")
+        except Exception as e:
+            st.error(f"Chart error: {e}")
 
         # ── TAB 4: Ask AI ─────────────────────────────────────────────────────
         with tab4:
@@ -301,16 +322,19 @@ if authentication_status:
 
         # ── TAB 5: History ────────────────────────────────────────────────────
         with tab5:
-            st.subheader("Your query history")
-            rows = cursor.execute(
-                "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 30",
-                (username,)
-            ).fetchall()
-            if rows:
-                hist_df = pd.DataFrame(rows, columns=["File", "Query", "Time"])
-                st.dataframe(hist_df, use_container_width=True, hide_index=True)
-            else:
-                st.info("No queries yet. Ask your first question in the 'Ask AI' tab!")
+    st.subheader("Your query history")
+    try:
+        rows = cursor.execute(
+            "SELECT filename, query, created_at FROM history WHERE username=? ORDER BY created_at DESC LIMIT 30",
+            (username,)
+        ).fetchall()
+        if rows:
+            hist_df = pd.DataFrame(rows, columns=["File","Query","Time"])
+            st.dataframe(hist_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("No queries yet. Ask your first question in the Ask AI tab!")
+    except Exception as e:
+        st.error(f"Could not load history: {e}")
 
     else:
         # Landing state
