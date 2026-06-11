@@ -17,9 +17,9 @@ if authentication_status:
         # Admin: show query history
         st.sidebar.markdown("---")
         if st.sidebar.button("📋 View query history"):
-            rows = cursor.execute("SELECT username, filename, query, created_at FROM history ORDER BY created_at DESC LIMIT 20").fetchall()
+            rows = cursor.execute("SELECT username, filename, query, LIMIT 20").fetchall()
             if rows:
-                hist_df = pd.DataFrame(rows, columns=["User","File","Query","Time"])
+                hist_df = pd.DataFrame(rows, columns=["User","File","Query"])
                 st.subheader("📋 Query History (Admin)")
                 st.dataframe(hist_df, use_container_width=True)
             else:
@@ -157,7 +157,7 @@ if authentication_status:
         with tab4:
             st.subheader("Your Query History")
             rows = cursor.execute(
-                "SELECT filename, query, FROM history WHERE username=?LIMIT 20",
+                "SELECT filename, query, FROM history WHERE username =?LIMIT 20",
                 (username,)
             ).fetchall()
             if rows:
