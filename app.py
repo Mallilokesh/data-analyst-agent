@@ -196,7 +196,11 @@ if authentication_status:
                     y_col = st.selectbox("Y axis", num_cols)
 
                 if chart_type == "Bar":
-                    chart_data = df.groupby(x_col)[y_col].sum().reset_index()
+                    if x_col == y_col:
+                        st.warning("Please select different columns for X and Y axis.")
+                    else:
+    
+                       st.bar_chart(chart_data.set_index(x_col))
                     st.bar_chart(chart_data.set_index(x_col))
                 elif chart_type == "Line":
                     st.line_chart(df.set_index(x_col)[y_col] if x_col != y_col else df[num_cols])
